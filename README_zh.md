@@ -1,6 +1,6 @@
 # PAD Mode for OpenClaw
 
-[🇺🇸 English](./README.md)
+[English](./README.md)
 
 **Plan → Act → Deliver** — 一个为 OpenClaw 设计的结构化任务执行 Skill。
 
