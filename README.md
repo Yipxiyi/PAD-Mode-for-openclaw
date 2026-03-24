@@ -1,6 +1,6 @@
 # PAD Mode for OpenClaw
 
-[🇨🇳 中文文档](./README_zh.md)
+[中文文档](./README_zh.md)
 
 **Plan → Act → Deliver** — A structured task execution skill for OpenClaw.
 
