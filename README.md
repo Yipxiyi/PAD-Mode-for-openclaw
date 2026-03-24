@@ -1,5 +1,5 @@
 # PAD Mode for OpenClaw
-<img width="1536" height="1024" alt="508CC1F5-BA7B-49C7-A0A1-80417856F5A8" src="https://github.com/user-attachments/assets/80670d1a-12fa-4c5e-9d74-d706a6e46353" />
+<img width="1536" height="776" alt="508CC1F5-BA7B-49C7-A0A1-80417856F5A8" src="https://github.com/user-attachments/assets/097ea4bf-a70b-4579-8246-5a578cf2e3a4" />
 
 **Plan → Act → Deliver** — A structured task execution skill for OpenClaw.
 
