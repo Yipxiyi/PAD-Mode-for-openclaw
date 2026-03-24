@@ -1,12 +1,13 @@
 # PAD Mode for OpenClaw
-
-[English](./README.md)
+<img width="1536" height="776" alt="508CC1F5-BA7B-49C7-A0A1-80417856F5A8" src="https://github.com/user-attachments/assets/cd2a24fd-f442-4657-81fc-52c1ad482585" />
 
 **Plan → Act → Deliver** — 一个为 OpenClaw 设计的结构化任务执行 Skill。
 
+[English](./README.md)
+
 ## 为什么需要 PAD Mode？
 
-大语言模型强大但在长执行链中很脆弱。没有结构约束，它们倾向于：
+LLM强大但在长执行链中很脆弱。没有结构约束，它们倾向于：
 
 - **丢失上下文** — 不知道做了什么、还剩什么
 - **跑偏** — 多步骤任务中偏离目标
@@ -94,7 +95,7 @@ cp -r PAD-Mode-for-openclaw ~/.openclaw/workspace/skills/pad-mode/
 
 灵感来自 **OpenAI Codex** 和 **Anthropic Claude Code** 的结构化计划模式。它们证明了一个事实：**强制 LLM 先计划再执行，能显著提高长任务的成功率。**
 
-PAD Mode 在此基础上增加了：
+PAD Mode 在此基础上还增加了：
 - **用户确认关卡**（计划审批 + 完成验收）
 - **前台/后台执行**选择
 - **实时进度追踪**（通过计划文档）
