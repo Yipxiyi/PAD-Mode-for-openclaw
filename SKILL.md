@@ -5,7 +5,7 @@ description: |
 
   Triggers:
   1. Slash command: "/pad" in conversation
-  2. Explicit keywords: "pad mode", "plan mode", "做个计划", "帮我规划", "做计划", "enter plan mode", "make a plan"
+  2. Explicit keywords: "pad mode", "plan mode", "make a plan", "plan this out"
   3. Auto-detect: When the user's request is complex (3+ distinct tasks, multi-file changes, architectural decisions, or ambiguous requirements), proactively suggest entering PAD mode.
 
   Use when: user wants structured execution tracking for non-trivial tasks, not for simple one-shot questions or commands.
@@ -15,9 +15,9 @@ description: |
 
 ## Overview
 
-PAD Mode transforms ambiguous requests into structured, trackable execution plans. Four phases: **Plan → Discuss → Act → Deliver**.
+PAD Mode transforms ambiguous requests into structured, trackable execution plans. Five phases: **Plan → Discuss → Approve → Act → Deliver**.
 
-## Phase 1: Decompose
+## Phase 1: Plan
 
 When triggered, analyze the user's request and create a plan document.
 
@@ -25,7 +25,7 @@ When triggered, analyze the user's request and create a plan document.
    - Use the template at `assets/plan-template.md`
    - Slug = 2-4 word summary of the task, hyphenated, lowercase
 2. Fill in:
-   - Title, status (`🟡 讨论中`), timestamp
+   - Title, status (`🟡 Discussing`), timestamp
    - Original requirement (user's words verbatim)
    - Understanding (your interpretation — confirm this is correct)
    - Initial task breakdown with tentative deliverables
@@ -44,8 +44,8 @@ Iterate on the plan based on user feedback:
 3. Refine task breakdown and deliverables
 4. Confirm scope boundaries — what's IN and what's OUT
 5. Each task MUST have a concrete, verifiable deliverable
-   - ❌ "优化代码" (vague)
-   - ✅ "重构 auth 模块，将 token 验证逻辑提取到 `auth/validator.js`，原 login 路由调用新模块，测试通过" (specific)
+   - ❌ "optimize the code" (vague)
+   - ✅ "Refactor auth module: extract token validation to `auth/validator.js`, update login route to use new module, tests passing" (specific)
 
 Continue until the user says the plan is good / looks good / approved.
 
@@ -53,57 +53,57 @@ Continue until the user says the plan is good / looks good / approved.
 
 When the user confirms the plan:
 
-1. Update status to `🔵 已确认`
+1. Update status to `🔵 Confirmed`
 2. Lock the plan — no more scope changes without explicit user request
 3. Summarize what will be executed: task list + expected deliverables
 4. Move to Phase 4
 
-## Phase 4: Execute
+## Phase 4: Act
 
 Execute tasks with live tracking:
 
-1. Update status to `🟢 执行中`
+1. Update status to `🟢 Executing`
 2. **Before starting execution**, assess the estimated complexity:
    - If the plan has 3+ tasks or any task involves significant work (multi-file changes, deployment, etc.), **ask the user**:
-     > 这个计划有 N 个任务，预计需要一些时间。你想前台执行（每步实时更新）还是转后台执行（完成后通知你）？
-     - Use Telegram buttons: `前台执行` / `后台执行`
+     > This plan has N tasks and will take some time. Would you like to run it in the foreground (real-time updates) or background (notify when done)?
+   - Use buttons: `Foreground` / `Background`
    - If the plan is simple (1-2 quick tasks), execute directly in the foreground.
-3. **前台执行模式**: Work through tasks directly, notifying after each one.
-4. **后台执行模式**: Spawn a sub-agent with the plan context. The sub-agent:
+3. **Foreground mode**: Work through tasks directly, notifying after each one.
+4. **Background mode**: Spawn a sub-agent with the plan context. The sub-agent:
    - Reads the plan document
    - Executes tasks sequentially
    - Sends progress updates to the main session after each task via `sessions_send`
    - Main agent forwards updates to the user
 5. Work through tasks **in order of dependencies** (independent tasks may run in parallel via sub-agents)
 6. For each task:
-   - Update task status to `🔄 进行中` in the plan doc
+   - Update task status to `🔄 In Progress` in the plan doc
    - Execute the work
-   - On success: mark `✅ 完成`, fill in notes with what was done
-   - On failure: mark `❌ 失败`, document the issue, propose a fix or skip
+   - On success: mark `✅ Done`, fill in notes with what was done
+   - On failure: mark `❌ Failed`, document the issue, propose a fix or skip
    - **Notify the user immediately** after each task completes
 7. If a task reveals that the plan needs adjustment:
    - Pause execution
    - Update the plan doc and change log
    - Ask the user before continuing
 
-## Phase 5: Completion Confirmation
+## Phase 5: Deliver
 
 After all tasks are marked complete, **do NOT automatically close the plan**. Instead:
 
-1. Update status to `⏳ 待确认`
+1. Update status to `⏳ Pending Review`
 2. Send a completion summary to the user:
-   > 📋 计划「XXX」所有任务已完成。交付物清单：
+   > 📋 Plan "XXX" — all tasks completed. Deliverables:
    > - T1.1 ✅ xxx
    > - T2.1 ✅ xxx
    > ...
-   > 
-   > 你确认一下是否都符合预期？有需要修改的地方吗？
-3. Use Telegram buttons: `✅ 确认归档` / `🔧 还有修改`
-4. If user clicks **确认归档**:
-   - Update status to `✅ 已完成`
+   >
+   > Does everything look good? Any changes needed?
+3. Use buttons: `✅ Archive` / `🔧 Changes Needed`
+4. If user clicks **Archive**:
+   - Update status to `✅ Completed`
    - Add archive timestamp to the plan doc
    - Send final confirmation
-5. If user clicks **还有修改**:
+5. If user clicks **Changes Needed**:
    - Go back to Phase 2 (Discuss) to refine
    - Add new tasks if needed
    - Resume Phase 4 execution
@@ -128,4 +128,4 @@ Create the directory if it doesn't exist. Use `read` to check an existing plan b
 
 ## Resuming a Plan
 
-If the user references an existing plan (e.g., "继续上次的计划"), search for it in `plans/`, read the doc, identify the last completed task, and resume from there.
+If the user references an existing plan (e.g., "continue the last plan"), search for it in `plans/`, read the doc, identify the last completed task, and resume from there.

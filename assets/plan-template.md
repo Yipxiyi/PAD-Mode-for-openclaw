@@ -1,69 +1,69 @@
-# 📋 {项目名称}
+# 📋 {Project Name}
 
-**状态:** 🟡 讨论中 | 🔵 已确认 | 🟢 执行中 | ⏳ 待确认 | ✅ 已完成 | 📦 已归档
-**创建:** {YYYY-MM-DD HH:mm}
-**归档:** {归档时间，未归档留空}
-**交付物:** {具体可验证的最终产出描述}
-
----
-
-## 需求分析
-
-**原始需求:**
-> {用户的原话}
-
-**理解确认:**
-- {我对需求的理解和假设}
-
-**范围边界:**
-- ✅ 包含: {明确在范围内的}
-- ❌ 排除: {明确不在范围内的}
+**Status:** 🟡 Discussing | 🔵 Confirmed | 🟢 Executing | ⏳ Pending Review | ✅ Completed | 📦 Archived
+**Created:** {YYYY-MM-DD HH:mm}
+**Archived:** {archive time, leave empty if not archived}
+**Deliverables:** {specific, verifiable final outputs}
 
 ---
 
-## 任务拆解
+## Requirements Analysis
 
-### 阶段 1: {阶段名称}
+**Original Request:**
+> {user's exact words}
 
-- [ ] **T1.1** {任务描述}
-  - 交付物: {具体产出}
-  - 依赖: 无
-  - 状态: ⬜ 待开始
+**Understanding:**
+- {your interpretation and assumptions}
 
-- [ ] **T1.2** {任务描述}
-  - 交付物: {具体产出}
-  - 依赖: T1.1
-  - 状态: ⬜ 待开始
-
-### 阶段 2: {阶段名称}
-
-- [ ] **T2.1** {任务描述}
-  - 交付物: {具体产出}
-  - 依赖: T1.2
-  - 状态: ⬜ 待开始
+**Scope:**
+- ✅ In scope: {what's included}
+- ❌ Out of scope: {what's excluded}
 
 ---
 
-## 待确认问题
+## Task Breakdown
 
-> _执行前需要用户回答的问题_
+### Phase 1: {Phase Name}
 
-1. {问题描述 — 如果有选项就列 A/B/C}
+- [ ] **T1.1** {Task description}
+  - Deliverable: {specific output}
+  - Dependencies: none
+  - Status: ⬜ Pending
+
+- [ ] **T1.2** {Task description}
+  - Deliverable: {specific output}
+  - Dependencies: T1.1
+  - Status: ⬜ Pending
+
+### Phase 2: {Phase Name}
+
+- [ ] **T2.1** {Task description}
+  - Deliverable: {specific output}
+  - Dependencies: T1.2
+  - Status: ⬜ Pending
 
 ---
 
-## 变更日志
+## Open Questions
 
-| 时间 | 修改内容 |
-|------|---------|
-| {YYYY-MM-DD HH:mm} | 创建初始计划 |
+> _Questions that need user input before execution_
+
+1. {question — offer A/B/C if applicable}
 
 ---
 
-## 执行日志
+## Change Log
 
-> _执行过程中的关键记录_
+| Time | Change |
+|------|--------|
+| {YYYY-MM-DD HH:mm} | Initial plan created |
 
-| 时间 | 任务 | 结果 | 备注 |
-|------|------|------|------|
-| {YYYY-MM-DD HH:mm} | T1.1 | ✅/❌ | {简要说明} |
+---
+
+## Execution Log
+
+> _Key execution records_
+
+| Time | Task | Result | Notes |
+|------|------|--------|-------|
+| {YYYY-MM-DD HH:mm} | T1.1 | ✅/❌ | {brief description} |

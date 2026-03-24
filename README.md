@@ -1,84 +1,105 @@
 # PAD Mode for OpenClaw
 
-**Plan → Act → Deliver** — 一个为 OpenClaw 设计的结构化任务执行 Skill。
+[🇨🇳 中文文档](./README_zh.md)
 
-## 什么是 PAD Mode？
+**Plan → Act → Deliver** — A structured task execution skill for OpenClaw.
 
-PAD Mode 将模糊的需求转化为结构化的、可追踪的执行计划。四个阶段：
+## Why PAD Mode?
 
-1. **Plan（计划）** — 拆解需求，创建计划文档，定义可交付物
-2. **Discuss（讨论）** — 与用户迭代完善计划，直到确认
-3. **Act（执行）** — 按计划执行任务，实时更新进度
-4. **Deliver（交付）** — 完成后确认归档，不留半成品
+Large language models are powerful but fragile in long execution chains. Without structure, they tend to:
 
-## 触发方式
+- **Lose track** of what's been done and what's left
+- **Drift off-topic** during multi-step tasks
+- **Skip deliverables** or leave work half-finished
+- **Forget context** after long conversations
 
-| 方式 | 示例 |
-|------|------|
-| 斜杠命令 | `/pad` |
-| 关键词 | "做个计划"、"plan mode"、"帮我规划" |
-| 自动检测 | 需求复杂（3+ 任务、多文件修改）时自动建议 |
+PAD Mode was inspired by the `plan mode` patterns in **Codex** and **Claude Code** — where structured planning dramatically improves execution reliability. The idea is simple: **don't start coding until the plan is clear, and don't call it done until the user confirms.**
 
-## 核心特性
+This brings that same discipline to OpenClaw: decompose first, agree on scope, execute with tracking, and verify completion together.
 
-- 📋 **计划文档** — 每个任务有明确可交付物，状态实时追踪
-- 🔄 **前台/后台执行** — 复杂任务可转后台（sub-agent），进度实时通知
-- ✅ **完成确认** — 任务完成后不会自动关闭，必须用户确认归档
-- 📦 **并行执行** — 独立任务可通过 sub-agent 并行处理
-- 🔁 **可恢复** — 支持中断后从上次进度继续
+## How It Works
 
-## 状态流转
+Four phases that enforce discipline at every step:
 
 ```
-🟡 讨论中 → 🔵 已确认 → 🟢 执行中 → ⏳ 待确认 → ✅ 已完成 → 📦 已归档
+  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
+  │   PLAN   │───▶│ DISCUSS  │───▶│   ACT    │───▶│ DELIVER  │
+  │ Decompose│    │ Iterate  │    │ Execute  │    │ Confirm  │
+  └──────────┘    └──────────┘    └──────────┘    └──────────┘
+       │               │               │               │
+       ▼               ▼               ▼               ▼
+  Create plan    Refine scope    Track progress   Review & archive
+  doc + tasks    + deliverables  per task         or iterate more
 ```
 
-## 安装
+## Triggers
 
-### 方式一：手动安装
+| Method | Example |
+|--------|---------|
+| Slash command | `/pad` |
+| Keywords | "pad mode", "plan mode", "make a plan" |
+| Auto-detect | Complex requests (3+ tasks, multi-file, architectural) |
 
-1. 下载 `plan-mode.skill` 文件
-2. 解压到 OpenClaw skills 目录：
-   ```bash
-   unzip plan-mode.skill -d ~/.openclaw/workspace/skills/plan-mode/
-   ```
+## Key Features
 
-### 方式二：直接复制
+- 📋 **Plan Document** — Every task has a concrete, verifiable deliverable. No vague "improve the code".
+- 🔄 **Foreground / Background** — Complex plans can run in background (sub-agent) with real-time progress updates pushed to you.
+- ✅ **Completion Gate** — Plans never auto-close. You must review and confirm before archiving.
+- 📦 **Parallel Execution** — Independent tasks run concurrently via sub-agents.
+- 🔁 **Resumable** — Interrupted plans can be picked up from the last checkpoint.
+- 📝 **Change Log** — Every modification is tracked in the plan document.
 
-将 `SKILL.md` 和 `assets/` 目录复制到：
+## Status Flow
+
 ```
-~/.openclaw/workspace/skills/plan-mode/
+🟡 Discussing → 🔵 Confirmed → 🟢 Executing → ⏳ Pending Review → ✅ Completed → 📦 Archived
 ```
 
-## 计划文档模板
+## Installation
 
-每个计划生成一个 Markdown 文件，保存在 `plans/` 目录：
+### Method 1: From source
+
+```bash
+git clone https://github.com/Yipxiyi/PAD-Mode-for-openclaw.git
+cp -r PAD-Mode-for-openclaw ~/.openclaw/workspace/skills/pad-mode/
+```
+
+### Method 2: .skill file
+
+Download `PAD_mode.skill` from the [releases](https://github.com/Yipxiyi/PAD-Mode-for-openclaw/releases) page.
+
+## Plan Document
+
+Each plan generates a Markdown file in `plans/`:
 
 ```markdown
-# 📋 [项目名称]
+# 📋 Project Name
 
-**状态:** 🟢 执行中
-**创建:** 2026-03-24 18:00
-**交付物:** 具体可验证的最终产出
+**Status:** 🟢 Executing
+**Created:** 2026-03-24 18:00
+**Deliverables:** Specific verifiable outputs
 
-## 需求分析
-[用户的原始需求 + 理解确认]
+## Task Breakdown
+- [ ] **T1.1** Task description
+  - Deliverable: What exactly will be produced
+  - Dependencies: none
+  - Status: ✅ Done
 
-## 任务拆解
-- [ ] **T1.1** 任务描述
-  - 交付物: 具体产出
-  - 依赖: 无
-  - 状态: ✅ 完成
-
-## 变更日志
-| 时间 | 修改内容 |
-|------|---------|
-| 2026-03-24 18:00 | 创建初始计划 |
-
-## 执行日志
-| 时间 | 任务 | 结果 | 备注 |
-|------|------|------|------|
+## Execution Log
+| Time | Task | Result | Notes |
+|------|------|--------|-------|
 ```
+
+## Background
+
+Inspired by the structured planning modes in **OpenAI Codex** and **Anthropic Claude Code**, which proved that LLMs perform significantly better when forced to plan before executing. PAD Mode brings this pattern to OpenClaw with additional features:
+
+- **User confirmation gates** (plan approval + completion review)
+- **Foreground/background execution** choice
+- **Real-time progress tracking** via plan documents
+- **Sub-agent parallelism** for independent tasks
+
+The goal: make OpenClaw as reliable for long-running tasks as it is for quick one-shots.
 
 ## License
 
