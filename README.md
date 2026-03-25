@@ -58,14 +58,20 @@ Four phases that enforce discipline at every step:
 
 ## Installation
 
-### Method 1: From source
+### Method 1: ClawHub (Recommended)
+
+```bash
+clawhub install pad-mode
+```
+
+### Method 2: From source
 
 ```bash
 git clone https://github.com/Yipxiyi/PAD-Mode-for-openclaw.git
 cp -r PAD-Mode-for-openclaw ~/.openclaw/workspace/skills/pad-mode/
 ```
 
-### Method 2: .skill file
+### Method 3: .skill file
 
 Download `PAD_mode.skill` from the [releases](https://github.com/Yipxiyi/PAD-Mode-for-openclaw/releases) page.
 

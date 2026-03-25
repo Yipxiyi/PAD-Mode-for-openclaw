@@ -58,14 +58,20 @@ PAD Mode 的灵感来自 **Codex** 和 **Claude Code** 的 `plan mode` 模式—
 
 ## 安装
 
-### 方式一：从源码安装
+### 方式一：ClawHub（推荐）
+
+```bash
+clawhub install pad-mode
+```
+
+### 方式二：从源码安装
 
 ```bash
 git clone https://github.com/Yipxiyi/PAD-Mode-for-openclaw.git
 cp -r PAD-Mode-for-openclaw ~/.openclaw/workspace/skills/pad-mode/
 ```
 
-### 方式二：.skill 文件
+### 方式三：.skill 文件
 
 从 [Releases](https://github.com/Yipxiyi/PAD-Mode-for-openclaw/releases) 页面下载 `PAD_mode.skill`。
 
