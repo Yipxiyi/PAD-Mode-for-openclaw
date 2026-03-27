@@ -1,7 +1,7 @@
 ---
 name: pad-mode
 description: |
-  PAD Mode (Plan → Act → Deliver). Structured planning and execution workflow for complex or multi-step tasks. Breaks down user requirements into a trackable plan document, iterates with the user until approved, then executes with live progress updates and completion confirmation.
+  Turn messy requests into structured plans. PAD Mode (Plan → Act → Deliver) gives your AI agent project management superpowers — automatic task breakdown, live progress tracking, sub-agent parallel execution, and human approval gates. Use /pad for complex tasks that need more than a single-shot answer. Perfect for plan mode, project planning, task planning, workflow planning, and multi-step execution.
 
   Triggers:
   1. Slash command: "/pad" in conversation
@@ -20,6 +20,11 @@ PAD Mode transforms ambiguous requests into structured, trackable execution plan
 ## Phase 1: Plan
 
 When triggered, analyze the user's request and create a plan document.
+
+**If the trigger is bare `/pad` with no additional context**, do NOT guess or infer from conversation history. Instead, ask the user directly:
+> What do you want to plan? Give me the task and I'll break it down.
+
+Wait for the user to provide a clear request before proceeding.
 
 1. Create the plan file: `plans/YYYY-MM-DD-<short-slug>.md`
    - Use the template at `assets/plan-template.md`
@@ -58,16 +63,17 @@ When the user confirms the plan:
 3. Summarize what will be executed: task list + expected deliverables
 4. Move to Phase 4
 
+**⚠️ Do NOT skip this phase. Wait for explicit user confirmation before executing.** Prefer buttons for confirmation; fall back to text acknowledgment if buttons are unavailable.
+
 ## Phase 4: Act
 
 Execute tasks with live tracking:
 
 1. Update status to `🟢 Executing`
-2. **Before starting execution**, assess the estimated complexity:
-   - If the plan has 3+ tasks or any task involves significant work (multi-file changes, deployment, etc.), **ask the user**:
-     > This plan has N tasks and will take some time. Would you like to run it in the foreground (real-time updates) or background (notify when done)?
-   - Use buttons: `Foreground` / `Background`
-   - If the plan is simple (1-2 quick tasks), execute directly in the foreground.
+2. **Before starting execution**, ask the user about execution mode:
+   > This plan has N tasks and will take some time. Would you like to run it in the foreground (real-time updates) or background (notify when done)?
+   - If channel supports buttons: use `Foreground` / `Background` buttons
+   - Otherwise: send as text, wait for user's text reply
 3. **Foreground mode**: Work through tasks directly, notifying after each one.
 4. **Background mode**: Spawn a sub-agent with the plan context. The sub-agent:
    - Reads the plan document
@@ -98,12 +104,14 @@ After all tasks are marked complete, **do NOT automatically close the plan**. In
    > ...
    >
    > Does everything look good? Any changes needed?
-3. Use buttons: `✅ Archive` / `🔧 Changes Needed`
-4. If user clicks **Archive**:
+3. Confirm with the user — prefer buttons when channel supports them, otherwise text confirmation:
+   - Buttons: `✅ Archive` / `🔧 Changes Needed`
+   - Text: send summary, wait for user reply matching "archive"/"done"/"looks good" or "changes"/"modify"/"needs work"
+4. If user clicks **Archive** (or confirms via text):
    - Update status to `✅ Completed`
    - Add archive timestamp to the plan doc
    - Send final confirmation
-5. If user clicks **Changes Needed**:
+5. If user clicks **Changes Needed** (or requests changes via text):
    - Go back to Phase 2 (Discuss) to refine
    - Add new tasks if needed
    - Resume Phase 4 execution
