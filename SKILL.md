@@ -17,6 +17,16 @@ description: |
 
 PAD Mode transforms ambiguous requests into structured, trackable execution plans. Five phases: **Plan → Discuss → Approve → Act → Deliver**.
 
+## ⚠️ Enforcement
+
+Violating the rules below is considered an execution failure. Treat the 🛑 STOP points as hard blockers — not suggestions.
+
+1. **Skip Phase 3 Approve and jump to execution** → Halt immediately. Undo any actions taken. Return to Phase 3, update status to `🔵 Confirmed`, and wait for explicit user approval.
+2. **Do deep research during Plan phase** → Discard all research results. The Plan phase is for structure only — no tool calls, no web searches, no file reads beyond the template.
+3. **Start executing without asking execution mode** → Pause all execution. Ask the user Foreground/Background, wait for reply, then resume.
+4. **Complete tasks without updating plan file status** → Immediately update the plan doc. Each task must reflect its actual state (`🔄 In Progress` → `✅ Done` / `❌ Failed`).
+5. **Deliver without button/text confirmation** → Do NOT auto-archive. Send the completion summary with buttons (or text fallback) and wait for user response.
+
 ## Phase 1: Plan
 
 When triggered, analyze the user's request and create a plan document.
@@ -63,14 +73,25 @@ When the user confirms the plan:
 3. Summarize what will be executed: task list + expected deliverables
 4. Move to Phase 4
 
-**⚠️ Do NOT skip this phase. Wait for explicit user confirmation before executing.** Prefer buttons for confirmation; fall back to text acknowledgment if buttons are unavailable.
+🛑 **STOP.** Do NOT proceed to Phase 4 until ALL of the following are true:
+- [ ] Plan status is `🔵 Confirmed` (updated in the plan file)
+- [ ] User has explicitly approved via text ("确认"/"approved"/"go"/"looks good") OR clicked an approval button
+- [ ] Scope boundaries are locked in the plan doc
+
+If the user hasn't responded yet, DO NOT execute. Wait. Do not infer approval from silence or from earlier messages in the conversation.
 
 ## Phase 4: Act
 
 Execute tasks with live tracking:
 
 1. Update status to `🟢 Executing`
-2. **Before starting execution**, ask the user about execution mode:
+
+🛑 **STOP.** Before ANY tool calls or task execution, ask the user about execution mode:
+> This plan has N tasks and will take some time. Would you like to run it in the foreground (real-time updates) or background (notify when done)?
+
+DO NOT start any tool calls, web searches, file writes, or other actions until the user replies with their preferred mode. Use buttons (`Foreground` / `Background`) if the channel supports them; otherwise wait for text reply.
+
+2.
    > This plan has N tasks and will take some time. Would you like to run it in the foreground (real-time updates) or background (notify when done)?
    - If channel supports buttons: use `Foreground` / `Background` buttons
    - Otherwise: send as text, wait for user's text reply
@@ -104,9 +125,11 @@ After all tasks are marked complete, **do NOT automatically close the plan**. In
    > ...
    >
    > Does everything look good? Any changes needed?
-3. Confirm with the user — prefer buttons when channel supports them, otherwise text confirmation:
-   - Buttons: `✅ Archive` / `🔧 Changes Needed`
-   - Text: send summary, wait for user reply matching "archive"/"done"/"looks good" or "changes"/"modify"/"needs work"
+
+🛑 **STOP.** Do NOT auto-archive. Send confirmation and WAIT for user response:
+- If channel supports buttons: send `✅ Archive` / `🔧 Changes Needed` buttons, wait for click
+- If text only: send summary, wait for user reply matching "archive"/"done"/"looks good" or "changes"/"modify"/"needs work"
+- If no response: do nothing. Do NOT assume approval from silence.
 4. If user clicks **Archive** (or confirms via text):
    - Update status to `✅ Completed`
    - Add archive timestamp to the plan doc
