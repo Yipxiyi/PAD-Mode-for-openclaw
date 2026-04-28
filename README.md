@@ -5,7 +5,7 @@
 **Plan → Act → Deliver** — A structured task execution skill for OpenClaw.
 
 [![ClawHub](https://img.shields.io/badge/ClawHub-install%20pad--mode-blue)](https://clawhub.ai/yipxiyi/pad-mode)
-[![Version](https://img.shields.io/badge/version-1.1.0-green)](https://clawhub.ai/yipxiyi/pad-mode)
+[![Version](https://img.shields.io/badge/version-1.1.2-green)](https://clawhub.ai/yipxiyi/pad-mode)
 [![License](https://img.shields.io/badge/license-MIT-yellow)](./LICENSE)
 
 [中文](./README_zh.md)

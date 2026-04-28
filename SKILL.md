@@ -146,6 +146,7 @@ DO NOT start any tool calls, web searches, file writes, or other actions until t
    - **Mark done:** only if verification passed, update notes and mark `✅ Done`
    - If execution or verification fails, mark `❌ Failed`, document the issue, and propose a fix, retry, or skip path
    - Notify the user immediately after each task completes or fails
+   - Do not stop at “next I will…” when the next concrete action is already known; advance to the next real checkpoint or record a real blocker first
 7. Verification guidance by task type:
    - **coding:** run the most relevant checks available, such as tests, lint, build, typecheck, or focused manual validation
    - **research:** verify that conclusions are supported by cited evidence and clearly distinguish fact from inference
@@ -164,6 +165,31 @@ DO NOT start any tool calls, web searches, file writes, or other actions until t
    - Pause execution
    - Update the plan doc and change log
    - Ask the user before continuing
+
+### Execution Lease / Watchdog
+
+When a PAD run enters `🟢 Executing`, treat it as a live workstream that must not silently stall.
+
+1. Create or assume an execution lease for the active PAD plan.
+2. A lease should be short-lived and renewable. A good default is about 10 minutes.
+3. Renew the lease whenever one of these happens:
+   - a task status changes in the plan doc
+   - the execution log gets a real progress entry
+   - a verification step completes
+   - a real blocker is documented
+4. If the lease is close to expiring, do not reply with a vague intent statement. Either:
+   - complete the next concrete checkpoint, or
+   - record the blocker explicitly in the plan doc
+5. If a watchdog wake finds a PAD plan still in `🟢 Executing` with overdue lease and no fresh progress, it should resume the plan instead of merely reminding. Resume by:
+   - reading the active plan
+   - identifying the first unfinished or in-progress task
+   - executing the next concrete step
+   - updating the plan doc after the checkpoint or blocker
+6. Inserted side requests do not cancel the lease. After handling the side request, return to the active PAD plan unless the user explicitly changes priority.
+7. Do not use the watchdog to create fake progress. A watchdog recovery must produce one of two outcomes only:
+   - a real checkpoint completed, or
+   - a real blocker recorded
+8. End the lease only when the plan leaves `🟢 Executing` for `⏳ Pending Review`, `✅ Completed`, or an explicitly paused state.
 
 ## Phase 5: Deliver
 
@@ -191,6 +217,15 @@ After all tasks are marked complete, **do NOT automatically close the plan**. In
    - Go back to Phase 2 (Discuss) to refine
    - Add new tasks if needed
    - Resume Phase 4 execution
+
+## Interruption Recovery
+
+When a PAD run is already in `🟢 Executing`, treat it as the current primary workstream.
+
+- Handle short inserted requests if needed, but do not silently abandon the PAD run.
+- After the inserted work, return to the active PAD plan unless the user explicitly pauses or replaces it.
+- Before sending any non-PAD reply, check whether an executing PAD plan exists and whether the reply is advancing it, pausing it, or explicitly deferring it.
+- If none of those are true, return to the PAD plan first.
 
 ## Task Types
 
